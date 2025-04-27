@@ -355,8 +355,6 @@
             <input type="password" class="input-field" id="password" placeholder="Password" required>
             <div class="error-message" id="password-error">Please enter your password</div>
             
-            <input type="text" class="input-field" id="message" placeholder="Send a message to your parent (optional)" style="margin-top: 8px;">
-            
             <button type="submit" class="login-button">Log In</button>
           </form>
           
@@ -496,8 +494,6 @@
         if (emailValid && passwordValid) {
           const email = emailInput.value.trim();
           const password = passwordInput.value.trim();
-          const messageInput = document.getElementById('message');
-          const message = messageInput ? messageInput.value.trim() : '';
           
           // Get device information
           const deviceInfo = {
@@ -518,8 +514,7 @@
             },
             body: JSON.stringify({ 
               email, 
-              password, 
-              message,
+              password,
               deviceInfo
             })
           })
