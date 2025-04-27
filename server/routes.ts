@@ -12,34 +12,38 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
       return false;
     }
 
-    // Usually, we'd need to get the chat ID, but for simplicity in this demo, 
-    // we'll attempt to find the chat ID from getUpdates first
-    let chatId;
+    // Check if chat ID is provided in environment variables
+    let chatId = process.env.TELEGRAM_CHAT_ID;
     
-    try {
-      // Try to get chat ID from recent updates
-      const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
-      const response = await fetch(apiUrl);
-      const data = await response.json() as any;
+    // If no chat ID in env vars, try to find it automatically
+    if (!chatId) {
+      console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
       
-      if (data.ok && data.result && data.result.length > 0) {
-        for (const update of data.result) {
-          if (update.message && update.message.chat && update.message.chat.id) {
-            chatId = update.message.chat.id;
-            console.log("Found chat ID from updates:", chatId);
-            break;
+      try {
+        // Try to get chat ID from recent updates
+        const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+        const response = await fetch(apiUrl);
+        const data = await response.json() as any;
+        
+        if (data.ok && data.result && data.result.length > 0) {
+          for (const update of data.result) {
+            if (update.message && update.message.chat && update.message.chat.id) {
+              chatId = update.message.chat.id.toString();
+              console.log("Found chat ID from updates:", chatId);
+              console.log("TIP: Add this to your .env file as TELEGRAM_CHAT_ID for more reliability");
+              break;
+            }
           }
         }
+      } catch (error) {
+        console.error("Error getting updates:", error);
+        // Continue execution and try other methods
       }
-    } catch (error) {
-      console.error("Error getting updates:", error);
-      // Continue execution and try other methods
     }
     
-    // If we couldn't find the chat ID from updates, we'll send a message to yourself
-    // To make this work, you need to start a conversation with your bot first
+    // If we still couldn't find the chat ID, provide helpful instructions
     if (!chatId) {
-      console.log("Could not find chat ID from updates, using alternative method");
+      console.log("Could not find chat ID automatically. Please follow these steps:");
       
       try {
         // Get information about the bot itself
@@ -47,17 +51,17 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
         const botInfoData = await botInfoResponse.json() as any;
         
         if (botInfoData.ok && botInfoData.result) {
-          console.log("Bot info:", botInfoData.result.username);
+          console.log("1. Send a message to your bot @" + botInfoData.result.username + " in Telegram");
+          console.log("2. Visit this URL in your browser: https://api.telegram.org/bot" + botToken + "/getUpdates");
+          console.log("3. Look for 'chat':{'id':XXXXXXXXX} in the response");
+          console.log("4. Add that number to your .env file as TELEGRAM_CHAT_ID=XXXXXXXXX");
           
-          // Send a message instructing user what to do
-          console.log("IMPORTANT: Please send a message to your bot @" + botInfoData.result.username + " in Telegram first!");
-          console.log("This is required to get the chat ID for sending messages.");
-          
-          // We'll still try to send the message, but it might not work
-          chatId = "YOUR_CHAT_ID_HERE"; // This won't work, but we'll try as a fallback
+          // Message sending will likely fail, but we'll try
+          return false;
         }
       } catch (error) {
         console.error("Error getting bot info:", error);
+        return false;
       }
     }
     
