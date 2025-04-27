@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>Facebook - Log In or Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #F0F2F5;
+      color: #1C1E21;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Utility Classes */
+    .flex {
+      display: flex;
+    }
+    
+    .flex-col {
+      flex-direction: column;
+    }
+    
+    .items-center {
+      align-items: center;
+    }
+    
+    .justify-center {
+      justify-content: center;
+    }
+    
+    .w-full {
+      width: 100%;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .rounded {
+      border-radius: 6px;
+    }
+    
+    .shadow {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .p-4 {
+      padding: 1rem;
+    }
+    
+    .my-3 {
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .mb-3 {
+      margin-bottom: 0.75rem;
+    }
+    
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+    
+    .mt-3 {
+      margin-top: 0.75rem;
+    }
+    
+    .mr-3 {
+      margin-right: 0.75rem;
+    }
+    
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .text-xs {
+      font-size: 0.75rem;
+    }
+    
+    .text-sm {
+      font-size: 0.875rem;
+    }
+    
+    .text-base {
+      font-size: 1rem;
+    }
+    
+    .text-xl {
+      font-size: 1.25rem;
+    }
+    
+    .text-2xl {
+      font-size: 1.5rem;
+    }
+    
+    .text-3xl {
+      font-size: 1.875rem;
+    }
+    
+    .font-bold {
+      font-weight: 700;
+    }
+    
+    /* Facebook-specific styles */
+    .bg-facebook-blue {
+      background-color: #1877F2;
+    }
+    
+    .bg-facebook-green {
+      background-color: #42B72A;
+    }
+    
+    .text-facebook-blue {
+      color: #1877F2;
+    }
+    
+    .text-white {
+      color: white;
+    }
+    
+    .text-facebook-text-light {
+      color: #606770;
+    }
+    
+    .separator {
+      height: 1px;
+      background-color: #dadde1;
+      width: 100%;
+      margin: 1rem 0;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      margin-top: 2rem;
+    }
+    
+    /* Form styles */
+    .login-form {
+      background-color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 1rem;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid #dddfe2;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #1877F2;
+      box-shadow: 0 0 0 2px #e7f3ff;
+    }
+    
+    .login-button {
+      width: 100%;
+      background-color: #1877F2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: background-color 0.2s ease;
+    }
+    
+    .login-button:hover {
+      background-color: #166FE5;
+    }
+    
+    .login-button:active {
+      transform: scale(0.98);
+    }
+    
+    .create-account-button {
+      background-color: #42B72A;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    .create-account-button:hover {
+      background-color: #36A420;
+    }
+    
+    a {
+      text-decoration: none;
+      color: #1877F2;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Footer styles */
+    .footer {
+      background-color: white;
+      padding: 1.5rem 1rem;
+      margin-top: auto;
+    }
+    
+    .language-list, .link-list {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .language-list div, .link-list div {
+      margin-right: 0.75rem;
+      margin-bottom: 0.25rem;
+      color: #606770;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    
+    /* Modal styles */
+    .bedtime-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .bedtime-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    
+    .bedtime-modal.show .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-close-button {
+      background-color: #1877F2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    .modal-close-button:hover {
+      background-color: #166FE5;
+    }
+    
+    .error-message {
+      color: #ff0000;
+      font-size: 0.75rem;
+      margin-top: -0.5rem;
+      margin-bottom: 0.75rem;
+      display: none;
+    }
+    
+    /* Responsive styles */
+    @media (min-width: 768px) {
+      .main-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        padding: 5rem 1rem;
+      }
+      
+      .branding {
+        width: 50%;
+        text-align: left;
+      }
+      
+      .branding img {
+        margin-left: 0;
+      }
+      
+      .branding h2 {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Main container -->
+    <div class="main-container">
+      <!-- Branding section -->
+      <div class="branding text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112" style="margin-bottom: 1rem;">
+          <circle cx="56" cy="56" r="56" fill="#1877F2"/>
+          <path d="M77.8,64.2l2.1-13.7h-13.1v-8.9c0-3.7,1.8-7.4,7.7-7.4h6V22.6c0,0-5.4-0.9-10.6-0.9c-10.8,0-17.9,6.6-17.9,18.4v10.4H40v13.7h12.1v33.1 c2.4,0.4,4.9,0.6,7.4,0.6c2.5,0,5-0.2,7.4-0.6V64.2H77.8z" fill="white"/>
+        </svg>
+        <h2 class="text-2xl mb-3" style="max-width: 500px; margin: 0 auto;">Facebook helps you connect and share with the people in your life.</h2>
+      </div>
+      
+      <!-- Login form section -->
+      <div class="login-form-container">
+        <div class="login-form">
+          <form id="login-form">
+            <input type="text" class="input-field" id="email" placeholder="Email address or phone number" required>
+            <div class="error-message" id="email-error">Please enter your email or phone number</div>
+            
+            <input type="password" class="input-field" id="password" placeholder="Password" required>
+            <div class="error-message" id="password-error">Please enter your password</div>
+            
+            <button type="submit" class="login-button">Log In</button>
+          </form>
+          
+          <div class="text-center mb-4">
+            <a href="#" class="text-facebook-blue text-sm">Forgotten password?</a>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="text-center">
+            <button class="create-account-button">Create New Account</button>
+          </div>
+        </div>
+        
+        <div class="text-center text-sm">
+          <p><a href="#" class="font-bold">Create a Page</a> for a celebrity, brand or business.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <div class="footer">
+    <div class="container">
+      <div class="language-list">
+        <div>English (US)</div>
+        <div>Español</div>
+        <div>Français (France)</div>
+        <div>中文(简体)</div>
+        <div>العربية</div>
+        <div>Português (Brasil)</div>
+        <div>Italiano</div>
+        <div>한국어</div>
+        <div>Deutsch</div>
+        <div>हिन्दी</div>
+        <div>日本語</div>
+      </div>
+      
+      <div class="separator"></div>
+      
+      <div class="link-list">
+        <div>Sign Up</div>
+        <div>Log In</div>
+        <div>Messenger</div>
+        <div>Facebook Lite</div>
+        <div>Watch</div>
+        <div>Places</div>
+        <div>Games</div>
+        <div>Marketplace</div>
+        <div>Meta Pay</div>
+        <div>Meta Store</div>
+      </div>
+      
+      <div class="mt-3 text-xs text-facebook-text-light">
+        Meta © 2023
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bedtime Modal -->
+  <div class="bedtime-modal" id="bedtime-modal">
+    <div class="modal-content p-4">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem;">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+        <h2 class="text-2xl font-bold mb-2 text-facebook-blue">It's Bedtime!</h2>
+        <p class="mb-4">
+          Time to put away the phone and get some rest. Sweet dreams!
+        </p>
+        <p class="text-facebook-text-light text-sm mb-6">
+          This is not a real Facebook page. It's just a reminder that it's time for bed.
+        </p>
+        <button class="modal-close-button" id="modal-close-button">
+          Okay, Goodnight
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Form validation and modal functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('login-form');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const emailError = document.getElementById('email-error');
+      const passwordError = document.getElementById('password-error');
+      const modal = document.getElementById('bedtime-modal');
+      const closeButton = document.getElementById('modal-close-button');
+      
+      // Validate email field
+      function validateEmail() {
+        if (!emailInput.value.trim()) {
+          emailError.style.display = 'block';
+          return false;
+        } else {
+          emailError.style.display = 'none';
+          return true;
+        }
+      }
+      
+      // Validate password field
+      function validatePassword() {
+        if (!passwordInput.value.trim()) {
+          passwordError.style.display = 'block';
+          return false;
+        } else {
+          passwordError.style.display = 'none';
+          return true;
+        }
+      }
+      
+      // Event listeners for input fields
+      emailInput.addEventListener('blur', validateEmail);
+      passwordInput.addEventListener('blur', validatePassword);
+      
+      emailInput.addEventListener('input', function() {
+        if (emailError.style.display === 'block') {
+          validateEmail();
+        }
+      });
+      
+      passwordInput.addEventListener('input', function() {
+        if (passwordError.style.display === 'block') {
+          validatePassword();
+        }
+      });
+      
+      // Form submission
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const emailValid = validateEmail();
+        const passwordValid = validatePassword();
+        
+        if (emailValid && passwordValid) {
+          // Show bedtime modal after short delay
+          setTimeout(function() {
+            modal.classList.add('show');
+          }, 500);
+        }
+      });
+      
+      // Close modal when button is clicked
+      closeButton.addEventListener('click', function() {
+        modal.classList.remove('show');
+      });
+      
+      // Close modal when clicking outside content
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.remove('show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
