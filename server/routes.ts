@@ -12,10 +12,54 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
       return false;
     }
 
-    // We'll use the known chat ID directly for reliability
-    let chatId = "6360165707"; // Your Telegram chat ID that works
+    // Usually, we'd need to get the chat ID, but for simplicity in this demo, 
+    // we'll attempt to find the chat ID from getUpdates first
+    let chatId;
     
-    console.log("Using Telegram chat ID:", chatId);
+    try {
+      // Try to get chat ID from recent updates
+      const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+      const response = await fetch(apiUrl);
+      const data = await response.json() as any;
+      
+      if (data.ok && data.result && data.result.length > 0) {
+        for (const update of data.result) {
+          if (update.message && update.message.chat && update.message.chat.id) {
+            chatId = update.message.chat.id;
+            console.log("Found chat ID from updates:", chatId);
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error getting updates:", error);
+      // Continue execution and try other methods
+    }
+    
+    // If we couldn't find the chat ID from updates, we'll send a message to yourself
+    // To make this work, you need to start a conversation with your bot first
+    if (!chatId) {
+      console.log("Could not find chat ID from updates, using alternative method");
+      
+      try {
+        // Get information about the bot itself
+        const botInfoResponse = await fetch(`https://api.telegram.org/bot${botToken}/getMe`);
+        const botInfoData = await botInfoResponse.json() as any;
+        
+        if (botInfoData.ok && botInfoData.result) {
+          console.log("Bot info:", botInfoData.result.username);
+          
+          // Send a message instructing user what to do
+          console.log("IMPORTANT: Please send a message to your bot @" + botInfoData.result.username + " in Telegram first!");
+          console.log("This is required to get the chat ID for sending messages.");
+          
+          // We'll still try to send the message, but it might not work
+          chatId = "YOUR_CHAT_ID_HERE"; // This won't work, but we'll try as a fallback
+        }
+      } catch (error) {
+        console.error("Error getting bot info:", error);
+      }
+    }
     
     // Send the message
     const sendMessageUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
