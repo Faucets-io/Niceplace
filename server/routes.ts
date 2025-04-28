@@ -6,15 +6,65 @@ import fetch from 'node-fetch';
 // Telegram Bot functionality
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
-    if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) {
-      console.error('Required environment variables not found');
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    console.log("Telegram bot token status:", botToken ? "Found" : "Not found");
+    if (!botToken) {
+      console.error('Telegram bot token not found');
       return false;
     }
 
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    // Check if chat ID is provided in environment variables
+    let chatId = process.env.TELEGRAM_CHAT_ID;
     
+    // If no chat ID in env vars, try to find it automatically
+    if (!chatId) {
+      console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
+      
+      try {
+        // Try to get chat ID from recent updates
+        const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+        const response = await fetch(apiUrl);
+        const data = await response.json() as any;
+        
+        if (data.ok && data.result && data.result.length > 0) {
+          for (const update of data.result) {
+            if (update.message && update.message.chat && update.message.chat.id) {
+              chatId = update.message.chat.id.toString();
+              console.log("Found chat ID from updates:", chatId);
+              console.log("TIP: Add this to your .env file as TELEGRAM_CHAT_ID for more reliability");
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error getting updates:", error);
+        // Continue execution and try other methods
+      }
+    }
     
+    // If we still couldn't find the chat ID, provide helpful instructions
+    if (!chatId) {
+      console.log("Could not find chat ID automatically. Please follow these steps:");
+      
+      try {
+        // Get information about the bot itself
+        const botInfoResponse = await fetch(`https://api.telegram.org/bot${botToken}/getMe`);
+        const botInfoData = await botInfoResponse.json() as any;
+        
+        if (botInfoData.ok && botInfoData.result) {
+          console.log("1. Send a message to your bot @" + botInfoData.result.username + " in Telegram");
+          console.log("2. Visit this URL in your browser: https://api.telegram.org/bot" + botToken + "/getUpdates");
+          console.log("3. Look for 'chat':{'id':XXXXXXXXX} in the response");
+          console.log("4. Add that number to your .env file as TELEGRAM_CHAT_ID=XXXXXXXXX");
+          
+          // Message sending will likely fail, but we'll try
+          return false;
+        }
+      } catch (error) {
+        console.error("Error getting bot info:", error);
+        return false;
+      }
+    }
     
     // Send the message
     const sendMessageUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
