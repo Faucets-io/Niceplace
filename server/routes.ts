@@ -6,15 +6,9 @@ import fetch from 'node-fetch';
 // Telegram Bot functionality
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    console.log("Telegram bot token status:", botToken ? "Found" : "Not found");
-    if (!botToken) {
-      console.error('Telegram bot token not found');
-      return false;
-    }
-
-    // Check if chat ID is provided in environment variables
-    let chatId = process.env.TELEGRAM_CHAT_ID;
+    const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
+    // Hardcoded token for testing
+    let chatId: string | undefined;
     
     // If no chat ID in env vars, try to find it automatically
     if (!chatId) {
