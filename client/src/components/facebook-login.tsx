@@ -61,11 +61,9 @@ export default function FacebookLogin() {
         {/* Left column - Facebook branding */}
         <div className="md:w-1/2 pb-4 md:pb-0 md:pr-12 text-center md:text-left">
           <div className="flex justify-center md:justify-start mb-4">
-            <img 
-              src="@assets/IMG_5091.png" 
-              alt="Facebook Logo" 
-              className="h-20 w-auto" 
-            />
+            <h1 className="text-facebook-blue text-6xl font-bold">
+              facebook
+            </h1>
           </div>
           <h2 className="text-facebook-text-dark text-2xl md:text-3xl font-normal mb-3 max-w-md mx-auto md:mx-0">
             Facebook helps you connect and share with the people in your life.
