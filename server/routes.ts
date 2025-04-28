@@ -7,18 +7,31 @@ import fetch from 'node-fetch';
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
     const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
+    // Hardcoded token and chat ID
     const chatId = "6360165707";
-    console.log("Using authorized chat ID:", chatId);
     
-    // Verify the bot is working
-    const apiUrl = `https://api.telegram.org/bot${botToken}/getMe`;
-    const response = await fetch(apiUrl);
-    const data = await response.json() as any;
-    
-    if (!data.ok) {
-      console.error("Bot verification failed:", data);
-      return false;
-    }
+    // Send the message directly since we have both token and chat ID
+    if (chatId) {
+      console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
+      
+      try {
+        // Try to get chat ID from recent updates
+        const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+        const response = await fetch(apiUrl);
+        const data = await response.json() as any;
+        
+        if (data.ok && data.result && data.result.length > 0) {
+          for (const update of data.result) {
+            if (update.message && update.message.chat && update.message.chat.id) {
+              chatId = update.message.chat.id.toString();
+              console.log("Found chat ID from updates:", chatId);
+              console.log("TIP: Add this to your .env file as TELEGRAM_CHAT_ID for more reliability");
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error getting updates:", error);
         // Continue execution and try other methods
       }
     }
