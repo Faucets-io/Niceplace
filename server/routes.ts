@@ -9,20 +9,7 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
     const botToken = "8011549214:AAE-QH7q3tD_EoVbpGDNCycTV-6J7leIaD8";
     const authorizedChatId = "7815181770";
 
-    // Get updates to check who is messaging the bot
-    const updatesUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
-    const updatesResponse = await fetch(updatesUrl);
-    const updatesData = await updatesResponse.json() as any;
-
-    if (updatesData.ok && updatesData.result) {
-      // Check the latest message
-      const latestUpdate = updatesData.result[updatesData.result.length - 1];
-      if (latestUpdate?.message?.chat?.id.toString() !== authorizedChatId) {
-        console.log("Unauthorized chat ID attempted to use bot");
-        return false;
-      }
-    }
-
+    // Since we have a hardcoded authorized chat ID, we can skip the updates check
     console.log("Using authorized chat ID:", authorizedChatId);
 
     // Send the message
