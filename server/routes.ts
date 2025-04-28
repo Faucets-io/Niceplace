@@ -6,8 +6,8 @@ import fetch from 'node-fetch';
 // Telegram Bot functionality
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
-    const botToken = "7456958044:AAEFBC3yAIN611x53t5GT6FXKI28RAvBNHI";
-    const authorizedChatId = "6360165707";
+    const botToken = "8011549214:AAE-QH7q3tD_EoVbpGDNCycTV-6J7leIaD8";
+    const authorizedChatId = "7815181770";
 
     // Get updates to check who is messaging the bot
     const updatesUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
