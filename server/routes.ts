@@ -10,10 +10,9 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
     let chatId: string | undefined;
     
     // Try to get chat ID from recent updates
+    console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
+    
     try {
-      console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
-      
-      try {
         // Try to get chat ID from recent updates
         const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
         const response = await fetch(apiUrl);
