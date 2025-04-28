@@ -32,24 +32,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start application"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Python HTTP Server"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Serve Standalone HTML"
-
-[[workflows.workflow]]
-name = "Start application"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Python HTTP Server"
@@ -59,12 +42,3 @@ author = "agent"
 task = "shell.exec"
 args = "cd . && python -m http.server 8000"
 waitForPort = 8000
-
-[[workflows.workflow]]
-name = "Serve Standalone HTML"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd cleaned_project && python -m http.server 5000"
-waitForPort = 5000
