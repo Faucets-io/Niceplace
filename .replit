@@ -32,13 +32,13 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Python HTTP Server"
+args = "Clean Facebook Login"
 
 [[workflows.workflow]]
-name = "Python HTTP Server"
+name = "Clean Facebook Login"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd . && python -m http.server 8000"
-waitForPort = 8000
+args = "cd clean_project && python3 -m http.server 5000"
+waitForPort = 5000
