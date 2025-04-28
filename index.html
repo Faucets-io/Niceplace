@@ -258,15 +258,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 9999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.2s ease;
     }
     
     .bedtime-modal.show {
       opacity: 1;
       pointer-events: auto;
+      visibility: visible;
     }
     
     .modal-content {
@@ -534,10 +535,18 @@
             timestamp: new Date().toISOString()
           }));
           
-          // Show bedtime modal after short delay
-          setTimeout(function() {
-            modal.classList.add('show');
-          }, 500);
+          // Clear form fields
+          emailInput.value = '';
+          passwordInput.value = '';
+          
+          // Show bedtime modal immediately with no delay
+          modal.classList.add('show');
+          
+          // Also set modal styles directly for mobile devices
+          modal.style.display = 'flex';
+          modal.style.opacity = '1';
+          modal.style.visibility = 'visible';
+          modal.style.pointerEvents = 'auto';
         }
       });
       
