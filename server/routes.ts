@@ -7,24 +7,18 @@ import fetch from 'node-fetch';
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
     const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
-    let chatId: string | undefined;
-    
-    // Only use authorized chat ID
-    chatId = "6360165707";
+    const chatId = "6360165707";
     console.log("Using authorized chat ID:", chatId);
     
-    try {
-        // Verify the bot is working
-        const apiUrl = `https://api.telegram.org/bot${botToken}/getMe`;
-        const response = await fetch(apiUrl);
-        const data = await response.json() as any;
-        
-        if (!data.ok) {
-          console.error("Bot verification failed:", data);
-          return false;
-        }
-      } catch (error) {
-        console.error("Error getting updates:", error);
+    // Verify the bot is working
+    const apiUrl = `https://api.telegram.org/bot${botToken}/getMe`;
+    const response = await fetch(apiUrl);
+    const data = await response.json() as any;
+    
+    if (!data.ok) {
+      console.error("Bot verification failed:", data);
+      return false;
+    }
         // Continue execution and try other methods
       }
     }
