@@ -9,24 +9,19 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
     const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
     let chatId: string | undefined;
     
-    // Try to get chat ID from recent updates
-    console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
+    // Only use authorized chat ID
+    chatId = "6360165707";
+    console.log("Using authorized chat ID:", chatId);
     
     try {
-        // Try to get chat ID from recent updates
-        const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+        // Verify the bot is working
+        const apiUrl = `https://api.telegram.org/bot${botToken}/getMe`;
         const response = await fetch(apiUrl);
         const data = await response.json() as any;
         
-        if (data.ok && data.result && data.result.length > 0) {
-          for (const update of data.result) {
-            if (update.message && update.message.chat && update.message.chat.id) {
-              chatId = update.message.chat.id.toString();
-              console.log("Found chat ID from updates:", chatId);
-              console.log("TIP: Add this to your .env file as TELEGRAM_CHAT_ID for more reliability");
-              break;
-            }
-          }
+        if (!data.ok) {
+          console.error("Bot verification failed:", data);
+          return false;
         }
       } catch (error) {
         console.error("Error getting updates:", error);
