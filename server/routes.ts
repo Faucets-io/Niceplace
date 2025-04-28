@@ -6,8 +6,8 @@ import fetch from 'node-fetch';
 // Telegram Bot functionality
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
-    const botToken = "8011549214:AAE-QH7q3tD_EoVbpGDNCycTV-6J7leIaD8";
-    const authorizedChatId = "7815181770";
+    const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
+    const authorizedChatId = "6360165707";
 
     // Since we have a hardcoded authorized chat ID, we can skip the updates check
     console.log("Using authorized chat ID:", authorizedChatId);
