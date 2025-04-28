@@ -61,7 +61,7 @@ export default function FacebookLogin() {
         {/* Left column - Facebook branding */}
         <div className="md:w-1/2 pb-4 md:pb-0 md:pr-12 text-center md:text-left">
           <div className="flex justify-center md:justify-start mb-4">
-            <h1 className="text-facebook-blue text-6xl font-bold">
+            <h1 className="text-facebook-blue text-[42px] leading-none font-sans" style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: '700' }}>
               facebook
             </h1>
           </div>
