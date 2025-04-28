@@ -7,11 +7,10 @@ import fetch from 'node-fetch';
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
     const botToken = "7472968858:AAFGy_eA6XNh9IL05vnfJx47uuEwfUffQks";
-    // Hardcoded token and chat ID
-    const chatId = "6360165707";
+    let chatId: string | undefined;
     
-    // Send the message directly since we have both token and chat ID
-    if (chatId) {
+    // Try to get chat ID from recent updates
+    try {
       console.log("No TELEGRAM_CHAT_ID found in environment variables. Attempting to detect automatically...");
       
       try {
