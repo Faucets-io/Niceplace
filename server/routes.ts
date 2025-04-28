@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 async function sendTelegramMessage(message: string): Promise<boolean> {
   try {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    console.log("Telegram bot token status:", botToken ? "Found" : "Not found");
     if (!botToken) {
       console.error('Telegram bot token not found');
       return false;
